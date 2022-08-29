@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
 | addGeodatabase | Adds Geodatabase feature layers. | `{ referenceId: String, geodatabaseURL: String, featureLayers: [{ referenceId: String, tableName: String, definitionExpression: String?, }], annotationLayers: [{ referenceId: String, tableName: String, }] }` |
 | addLayersToGeodatabase | Adds feature layers and annotation layers to the Geodatabase with the given geodatabaseReferenceId. | `{ geodatabaseReferenceId: String, featureLayers: [{ referenceId: String, tableName: String, definitionExpression: String? }], annotationLayers: [{ referenceId: String, tableName: String }] }` |
 | removeLayersFromGeodatabase | Removes feature layers from the Geodatabase with the given geodatabaseReferenceID. | `{ geodatabaseReferenceId: String, featureLayerReferenceIds: [String], annotationLayerReferenceIds: [String] }` |
-| removeGeodatabase | Removes the Geodatabase with the given ID. | `` `{` ```geodatabaseReferenceId: String }` |
+| removeGeodatabase | Removes the Geodatabase with the given ID. | `{ geodatabaseReferenceId: String }` |
 
 ### The Point Object
 
