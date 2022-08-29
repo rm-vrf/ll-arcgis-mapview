@@ -1,0 +1,35 @@
+
+{
+  "name": "ll-arcgis-mapview",
+  "version": "0.1.1",
+  "description": "A Basic ArcGIS port for React Native.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react-native",
+    "arcgis"
+  ],
+  "author": "Lane",
+  "license": "MIT",
+  "peerDependencies": {
+    "react-native": "^0.41.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lane-cn/ll-arcgis-mapview.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lane-cn/ll-arcgis-mapview/issues"
+  },
+  "homepage": "https://github.com/lane-cn/ll-arcgis-mapview",
+  "files": [
+    "android",
+    "ios",
+    "index.js",
+    "AGSMapView.js",
+    "LICENSE",
+    "README.md"
+  ]
+}
