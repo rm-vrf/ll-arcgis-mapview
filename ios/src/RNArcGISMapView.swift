@@ -41,6 +41,9 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
         })
         self.touchDelegate = self
         self.graphicsOverlays.add(routeGraphicsOverlay)
+        self.viewpointChangedHandler = { [weak self] in
+            self?.raiseOnMapMoved()
+        }
     }
     
     // MARK: Native methods
@@ -110,11 +113,12 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
         }
     }
 
-    @objc public func geoView(_ geoView: AGSGeoView, didTouchDragToScreenPoint screenPoint: CGPoint, mapPoint: AGSPoint) {
+    func raiseOnMapMoved() {
         if let onMapMoved = onMapMoved {
+            let env = AGSGeometryEngine.projectGeometry(self.visibleArea!.extent, to: AGSSpatialReference.wgs84()) as! AGSEnvelope
+            //print("viewpointChangedHandler \(env.xMin), \(env.xMax), \(env.yMin), \(env.yMax), \(env.center.x), \(env.center.y), \(env.width), \(env.height)")
             let reactResult: [AnyHashable: Any] = [
-                "mapPoint" : ["latitude" : mapPoint.y, "longitude": mapPoint.x],
-                "screenPoint" : ["x": screenPoint.x, "y": screenPoint.y]
+                "mapPoint" : ["latitude" : env.center.y, "longitude": env.center.x]
             ]
             onMapMoved(reactResult)
         }
