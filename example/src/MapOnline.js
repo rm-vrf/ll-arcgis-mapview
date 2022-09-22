@@ -129,7 +129,8 @@ const MapOnline = () => {
                 basemapUrl={'https://www.arcgis.com/home/item.html?id=' + basemap}
                 onMapDidLoad={e => { console.log('onMapDidLoad', e.nativeEvent) }} 
                 onSingleTap={e => { console.log('onSingleTap', e.nativeEvent) }} 
-                onMapMoved={e => { console.log('onMapMoved', e.nativeEvent) }} 
+                onLongPress={e => { console.log('onLongPress', e.nativeEvent) }}
+                //onMapMoved={e => { console.log('onMapMoved', e.nativeEvent) }} 
                 onOverlayWasAdded = {e => { console.log('onOverlayWasAdded', e.nativeEvent) }}
                 onOverlayWasModified = {e => { console.log('onOverlayWasModified', e.nativeEvent) }}
                 onOverlayWasRemoved = {e => { console.log('onOverlayWasRemoved', e.nativeEvent) }}

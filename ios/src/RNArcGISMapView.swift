@@ -49,66 +49,77 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
     // MARK: Native methods
     @objc public func geoView(_ geoView: AGSGeoView, didTapAtScreenPoint screenPoint: CGPoint, mapPoint: AGSPoint) {
         self.callout.dismiss()
-        if onSingleTap != nil {
-            let latLongPoint = AGSGeometryEngine.projectGeometry(mapPoint, to: AGSSpatialReference.wgs84()) as! AGSPoint
-            var reactResult: [AnyHashable: Any] = [
-                "mapPoint": ["latitude" : latLongPoint.y, "longitude": latLongPoint.x],
-                "screenPoint" : ["x": screenPoint.x, "y": screenPoint.y]
-            ]
-          
-            // Geodatabase feature layer & annotation layer
-            var layers: [AGSLayer] = []
-            if let operationalLayers = self.map?.operationalLayers as? [AGSLayer] {
-                layers.append(contentsOf: operationalLayers)
-            }
-          
-            if !layers.isEmpty {
-                // Identity feature layer & annotation layer
-                for layer in layers {
-                    self.identifyLayer(layer, screenPoint: screenPoint, tolerance: 15, returnPopupsOnly: false, maximumResults: 10) {[weak self] (result) in
-                        if let error = result.error {
-                            reactResult["success"] = false
-                            reactResult["errorMessage"] = error.localizedDescription
-                        } else {
-                            reactResult["success"] = true
-                        }
-                        guard !result.geoElements.isEmpty else {
-                            self?.onSingleTap!(reactResult)
-                            return
-                        }
-                        for element in result.geoElements {
-                            //print("\(item.attributes)")
-                            reactResult["geoElementAttributes"] = element.attributes
-                            if self?.recenterIfGraphicTapped ?? false {
-                                self?.setViewpointCenter(mapPoint, completion: nil)
-                            }
-                        }
-                        self?.onSingleTap!(reactResult)
-                    }
-                }
-            } else {
-                // Identity graphics overlay
-                self.identifyGraphicsOverlays(atScreenPoint: screenPoint, tolerance: 15, returnPopupsOnly: false) { [weak self] (result, error) in
-                    if let error = error {
+        if let onSingleTap = onSingleTap {
+            raiseEvent(event: onSingleTap, screenPoint: screenPoint, mapPoint: mapPoint)
+        }
+    }
+    
+    @objc public func geoView(_ geoView: AGSGeoView, didLongPressAtScreenPoint screenPoint: CGPoint, mapPoint: AGSPoint) {
+        self.callout.dismiss()
+        if let onLongPress = onLongPress {
+            raiseEvent(event: onLongPress, screenPoint: screenPoint, mapPoint: mapPoint)
+        }
+    }
+
+    func raiseEvent(event: @escaping RCTDirectEventBlock, screenPoint: CGPoint, mapPoint: AGSPoint) {
+        let latLongPoint = AGSGeometryEngine.projectGeometry(mapPoint, to: AGSSpatialReference.wgs84()) as! AGSPoint
+        var reactResult: [AnyHashable: Any] = [
+            "mapPoint": ["latitude" : latLongPoint.y, "longitude": latLongPoint.x],
+            "screenPoint" : ["x": screenPoint.x, "y": screenPoint.y]
+        ]
+      
+        // Geodatabase feature layer & annotation layer
+        var layers: [AGSLayer] = []
+        if let operationalLayers = self.map?.operationalLayers as? [AGSLayer] {
+            layers.append(contentsOf: operationalLayers)
+        }
+      
+        if !layers.isEmpty {
+            // Identity feature layer & annotation layer
+            for layer in layers {
+                self.identifyLayer(layer, screenPoint: screenPoint, tolerance: 15, returnPopupsOnly: false, maximumResults: 10) {[weak self] (result) in
+                    if let error = result.error {
                         reactResult["success"] = false
                         reactResult["errorMessage"] = error.localizedDescription
                     } else {
                         reactResult["success"] = true
                     }
-                    guard let result = result, !result.isEmpty else {
-                        self?.onSingleTap!(reactResult)
+                    guard !result.geoElements.isEmpty else {
+                        event(reactResult)
                         return
                     }
-                    for item in result {
-                        if item.graphicsOverlay is RNAGSGraphicsOverlay, let closestGraphic = item.graphics.first, let referenceId = closestGraphic.attributes["referenceId"] as? NSString{
-                            reactResult["graphicReferenceId"] = referenceId
-                            if self?.recenterIfGraphicTapped ?? false {
-                                self?.setViewpointCenter(mapPoint, completion: nil)
-                            }
+                    for element in result.geoElements {
+                        //print("\(item.attributes)")
+                        reactResult["geoElementAttributes"] = element.attributes
+                        if self?.recenterIfGraphicTapped ?? false {
+                            self?.setViewpointCenter(mapPoint, completion: nil)
                         }
                     }
-                    self?.onSingleTap!(reactResult)
+                    event(reactResult)
                 }
+            }
+        } else {
+            // Identity graphics overlay
+            self.identifyGraphicsOverlays(atScreenPoint: screenPoint, tolerance: 15, returnPopupsOnly: false) { [weak self] (result, error) in
+                if let error = error {
+                    reactResult["success"] = false
+                    reactResult["errorMessage"] = error.localizedDescription
+                } else {
+                    reactResult["success"] = true
+                }
+                guard let result = result, !result.isEmpty else {
+                    event(reactResult)
+                    return
+                }
+                for item in result {
+                    if item.graphicsOverlay is RNAGSGraphicsOverlay, let closestGraphic = item.graphics.first, let referenceId = closestGraphic.attributes["referenceId"] as? NSString{
+                        reactResult["graphicReferenceId"] = referenceId
+                        if self?.recenterIfGraphicTapped ?? false {
+                            self?.setViewpointCenter(mapPoint, completion: nil)
+                        }
+                    }
+                }
+                event(reactResult)
             }
         }
     }
@@ -126,6 +137,7 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
     
     // MARK: Exposed RN Event Emitters
     @objc var onSingleTap: RCTDirectEventBlock?
+    @objc var onLongPress: RCTDirectEventBlock?
     @objc var onMapDidLoad: RCTDirectEventBlock?
     @objc var onOverlayWasModified: RCTDirectEventBlock?
     @objc var onOverlayWasAdded: RCTDirectEventBlock?
