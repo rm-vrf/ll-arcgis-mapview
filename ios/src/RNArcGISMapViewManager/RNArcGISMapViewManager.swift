@@ -133,6 +133,13 @@ public class RNArcGISMapViewManager: RCTViewManager {
         }
     }
     
+    @objc func getVisibleAreaViaManager(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.main.async {
+            let component = self.agsMapView!
+            component.getVisibleArea(resolve, rejecter: reject)
+        }
+    }
+    
     @objc func dispose(/*_ node: NSNumber*/) {
         self.agsMapView?.graphicsOverlays.removeAllObjects()
         self.agsMapView?.map = nil

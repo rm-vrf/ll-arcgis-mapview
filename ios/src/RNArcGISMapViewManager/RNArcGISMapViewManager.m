@@ -47,6 +47,7 @@ RCT_EXTERN_METHOD(addGeodatabaseViaManager:(NSDictionary*)args)
 RCT_EXTERN_METHOD(addLayersToGeodatabaseViaManager:(NSDictionary*)args)
 RCT_EXTERN_METHOD(removeLayersFromGeodatabaseViaManager:(NSDictionary*)args)
 RCT_EXTERN_METHOD(removeGeodatabaseViaManager:(NSString*) args)
+RCT_EXTERN_METHOD(getVisibleAreaViaManager:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(dispose/*:(nonnull NSNumber*) node*/)
 @end

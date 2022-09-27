@@ -410,8 +410,17 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
         }
     }
     
-    
-    
+    @objc func getVisibleArea(_ resolve: RCTPromiseResolveBlock, rejecter reject: RCTPromiseRejectBlock) {
+        let env = AGSGeometryEngine.projectGeometry(self.visibleArea!.extent, to: AGSSpatialReference.wgs84()) as! AGSEnvelope
+        let reactResult: [AnyHashable: Any] = [
+            "min": ["latitude" : env.yMin, "longitude": env.xMin],
+            "max": ["latitude" : env.yMax, "longitude": env.xMax],
+            "center": ["latitude" : env.center.y, "longitude": env.center.x],
+            "area": ["height": env.height, "width": env.width]
+        ]
+        resolve(reactResult)
+    }
+
     @objc func getRouteIsVisible(_ args: RCTResponseSenderBlock) {
         args([routeGraphicsOverlay.isVisible])
     }

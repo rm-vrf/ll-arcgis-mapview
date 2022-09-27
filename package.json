@@ -1,7 +1,7 @@
 
 {
   "name": "ll-arcgis-mapview",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "A Basic ArcGIS port for React Native.",
   "main": "index.js",
   "scripts": {
