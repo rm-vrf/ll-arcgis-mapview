@@ -55,6 +55,14 @@ class ArcGISMapView extends React.Component {
         NativeModules.RNArcGISMapViewManager.removeGeodatabaseViaManager(geodatabaseId);
     }
 
+    getVisibleArea = () => {
+        return new Promise((resolve, reject) => {
+            NativeModules.RNArcGISMapViewManager.getVisibleAreaViaManager()
+                .then(result => resolve(result))
+                .catch(error => reject(error));
+        });
+    }
+
     // MARK: Render
     render() {
         return <AGSMap {...this.props} ref={this.agsMapRef} />
