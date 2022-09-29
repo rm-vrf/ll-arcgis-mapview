@@ -4300,9 +4300,9 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.2.4.tgz#eca284f75d2965079309dc0ad9255abb2ebc1632"
   integrity sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==
 
-ll-arcgis-mapview@../ll-arcgis-mapview-0.2.4.tgz:
-  version "0.2.4"
-  resolved "../ll-arcgis-mapview-0.2.4.tgz#b35362650e0c0608d17e38517df1041346cce6d3"
+ll-arcgis-mapview@../ll-arcgis-mapview-0.2.5.tgz:
+  version "0.2.5"
+  resolved "../ll-arcgis-mapview-0.2.5.tgz#71321994750d79354a1fca3a2d619c93569c9a6f"
 
 locate-path@^3.0.0:
   version "3.0.0"

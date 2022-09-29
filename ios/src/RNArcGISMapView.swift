@@ -456,9 +456,32 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
     }
   
     private func createBasemap(url: URL) -> AGSBasemap? {
-        if url.path.lowercased().hasSuffix(".vtpk") {
+        if url.isFileURL && url.pathExtension.lowercased() == "vtpk" {
             let vectorTiledLayer = AGSArcGISVectorTiledLayer(url: url)
             return AGSBasemap(baseLayer: vectorTiledLayer)
+        } else if url.isFileURL && url.pathExtension.lowercased() == "tpkx" {
+            let cache = AGSTileCache(fileURL: url)
+            let layer = AGSArcGISTiledLayer(tileCache: cache)
+            return AGSBasemap(baseLayer: layer)
+        } else if !url.isFileURL && url.lastPathComponent == "VectorTileServer" {
+            let vectorTiledLayer = AGSArcGISVectorTiledLayer(url: url)
+            return AGSBasemap(baseLayer: vectorTiledLayer)
+        } else if !url.isFileURL && url.lastPathComponent == "MapServer" {// MapImageLayer or TiledLayer
+            let urlAndParams:URL = URL(string: "\(url)?f=pjson")!
+            let jsonData = URLSession(configuration: .default).synchronousGet(with: urlAndParams, params: nil);
+            do {
+                let json = try JSONSerialization.jsonObject(with: jsonData.0!, options: []) as? [String: Any]
+                if let json = json, let _ = json["tileInfo"] {
+                    let tiledLayer = AGSArcGISTiledLayer(url: url)
+                    return AGSBasemap(baseLayer: tiledLayer)
+                } else {
+                    let layer = AGSArcGISMapImageLayer(url: url)
+                    return AGSBasemap(baseLayer: layer)
+                }
+            } catch {
+                print(error.localizedDescription)
+                return nil
+            }
         } else {
             return AGSBasemap(url: url)
         }

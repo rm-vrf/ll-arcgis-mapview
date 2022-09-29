@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MapOnline from "./src/MapOnline";
 import GetMapArea from "./src/GetMapArea";
+import Basemap from "./src/Basemap";
 
 const Stack = createNativeStackNavigator();
 const navigationRef = React.createRef();
@@ -15,6 +16,7 @@ const App = () => {
         <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'ArcGIS Map View' }} />
         <Stack.Screen name="Map (online)" component={MapOnline} />
         <Stack.Screen name="GetMapArea" component={GetMapArea} />
+        <Stack.Screen name="Basemap" component={Basemap} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -25,6 +27,7 @@ const HomeScreen = ({ navigation }) => {
     <>
       <Button title="Map (online)" onPress={() => navigation.navigate('Map (online)', {})} />
       <Button title="Get Map Area" onPress={() => navigation.navigate('GetMapArea', {})} />
+      <Button title="Change Basemap" onPress={() => navigation.navigate('Basemap', {})} />
     </>
   );
 };
