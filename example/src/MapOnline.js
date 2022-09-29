@@ -80,9 +80,7 @@ const MapOnline = () => {
         },
     };
     
-    const ids = ['5be0bc3ee36c4e058f7b3cebc21c74e6', '92ad152b9da94dee89b9e387dfe21acd'];
     const [ center, setCenter ] = useState(points[0]);
-    const [ basemap, setBasemap ] = useState('');
 
     return (
         <>
@@ -93,10 +91,6 @@ const MapOnline = () => {
                     setCenter(points[i]);
                     agsView.recenterMap([center]);
                 }}>
-            </Button>
-            <Button 
-                title='Change basemap' 
-                onPress={() => { setBasemap(basemap === ids[0] ? ids[1] : ids[0]); }}>
             </Button>
             <Button 
                 title='Add overlay'
@@ -126,7 +120,7 @@ const MapOnline = () => {
                 style={styles.map} 
                 initialMapCenter={[center]}
                 recenterIfGraphicTapped={true}
-                basemapUrl={'https://www.arcgis.com/home/item.html?id=' + basemap}
+                //basemapUrl={'https://www.arcgis.com/home/item.html?id=' + basemap}
                 onMapDidLoad={e => { console.log('onMapDidLoad', e.nativeEvent) }} 
                 onSingleTap={e => { console.log('onSingleTap', e.nativeEvent) }} 
                 onLongPress={e => { console.log('onLongPress', e.nativeEvent) }}

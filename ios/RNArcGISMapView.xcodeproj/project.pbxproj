@@ -18,6 +18,7 @@
 		890C22BF28AE2F0600F507DB /* RNArcGISMapViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 890C22BD28AE2F0600F507DB /* RNArcGISMapViewManager.swift */; };
 		890C22C128AE2F2C00F507DB /* ArcGISToolkit in Frameworks */ = {isa = PBXBuildFile; productRef = 890C22C028AE2F2C00F507DB /* ArcGISToolkit */; };
 		890DE34728AE2329002A1719 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 890DE33828AE2321002A1719 /* libReact.a */; };
+		8948F1AA28E5EFFE00329F2B /* URLSessionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8948F1A928E5EFFE00329F2B /* URLSessionExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -104,6 +105,7 @@
 		890C22BC28AE2F0600F507DB /* RNArcGISMapViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNArcGISMapViewManager.m; sourceTree = "<group>"; };
 		890C22BD28AE2F0600F507DB /* RNArcGISMapViewManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNArcGISMapViewManager.swift; sourceTree = "<group>"; };
 		890DE32C28AE2321002A1719 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
+		8948F1A928E5EFFE00329F2B /* URLSessionExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +150,7 @@
 				890C22B428AE2EF600F507DB /* RNAGSUIColorExtension.swift */,
 				890C22B028AE2EF600F507DB /* RNArcGISMapView.swift */,
 				890C22AB28AE2DA400F507DB /* RNArcGISMapViewManager */,
+				8948F1A928E5EFFE00329F2B /* URLSessionExtension.swift */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -313,6 +316,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8948F1AA28E5EFFE00329F2B /* URLSessionExtension.swift in Sources */,
 				890C22B828AE2EF600F507DB /* RNArcGISMapView.swift in Sources */,
 				890C22BE28AE2F0600F507DB /* RNArcGISMapViewManager.m in Sources */,
 				890C22B928AE2EF600F507DB /* RNAGSRouter.swift in Sources */,
