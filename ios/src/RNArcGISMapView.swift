@@ -171,26 +171,31 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
     
     @objc func centerMap(_ args: NSArray) {
         var points = [AGSPoint]()
-        var scale: Double = 10000
         if let argsCasted = args as? [NSDictionary] {
             for rawPoint in argsCasted {
                 if let latitude = rawPoint["latitude"] as? NSNumber, let longitude = rawPoint["longitude"] as? NSNumber {
                     points.append(AGSPoint(x: longitude.doubleValue, y: latitude.doubleValue, spatialReference: AGSSpatialReference.wgs84()))
-                }
-                if let d = rawPoint["scale"] as? Double {
-                    scale = d
                 }
             }
         }
         if (points.count == 0){
             print("WARNING: Recenter point array was empty or contained invalid data.")
         } else if points.count == 1 {
-            let viewpoint = AGSViewpoint(center: points.first!, scale: scale)
-            self.setViewpoint(viewpoint);
+            self.setViewpointCenter(points.first!)
         } else {
             let polygon = AGSPolygon(points: points)
             self.setViewpointGeometry(polygon, padding: 50, completion: nil)
         }
+    }
+    
+    @objc func scaleMap(_ args: NSNumber) {
+        let scale = args.doubleValue
+        self.setViewpointScale(scale)
+    }
+
+    @objc func zoomMap(_ args: NSNumber) {
+        let scale = 591657550.5 / pow(2, args.doubleValue)
+        self.setViewpointScale(scale)
     }
     
     @objc func addGraphicsOverlay(_ args: NSDictionary) {

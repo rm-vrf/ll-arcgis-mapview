@@ -85,14 +85,6 @@ const MapOnline = () => {
     return (
         <>
             <Button 
-                title='Change map center' 
-                onPress={() => {
-                    const i = points[0].scale === center.scale ? 1 : 0;
-                    setCenter(points[i]);
-                    agsView.recenterMap([center]);
-                }}>
-            </Button>
-            <Button 
                 title='Add overlay'
                 onPress={() => { agsView.addGraphicsOverlay(overlay); }}>
             </Button>

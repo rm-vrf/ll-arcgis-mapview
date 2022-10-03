@@ -43,6 +43,20 @@ public class RNArcGISMapViewManager: RCTViewManager {
         }
     }
     
+    @objc func scaleMapViaManager(_ args: NSNumber) {
+        DispatchQueue.main.async {
+            let component = self.agsMapView!
+            component.scaleMap(args)
+        }
+    }
+    
+    @objc func zoomMapViaManager(_ args: NSNumber) {
+        DispatchQueue.main.async {
+            let component = self.agsMapView!
+            component.zoomMap(args)
+        }
+    }
+    
     @objc func addGraphicsOverlayViaManager(/*_ node: NSNumber, */_ args: NSDictionary) {
         DispatchQueue.main.async {
             //let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
