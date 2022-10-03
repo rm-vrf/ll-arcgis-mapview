@@ -19,6 +19,14 @@ class ArcGISMapView extends React.Component {
         NativeModules.RNArcGISMapViewManager.centerMapViaManager(pointArray);
     }
     
+    scaleMap = (args) => {
+        NativeModules.RNArcGISMapViewManager.scaleMapViaManager(args);
+    }
+    
+    zoomMap = (args) => {
+        NativeModules.RNArcGISMapViewManager.zoomMapViaManager(args);
+    }
+    
     addGraphicsOverlay = (overlayData) => {
         NativeModules.RNArcGISMapViewManager.addGraphicsOverlayViaManager(overlayData);
     }

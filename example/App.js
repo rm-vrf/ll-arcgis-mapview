@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MapOnline from "./src/MapOnline";
 import GetMapArea from "./src/GetMapArea";
 import Basemap from "./src/Basemap";
+import ZoomMap from "./src/ZoomMap";
 
 const Stack = createNativeStackNavigator();
 const navigationRef = React.createRef();
@@ -17,6 +18,7 @@ const App = () => {
         <Stack.Screen name="Map (online)" component={MapOnline} />
         <Stack.Screen name="GetMapArea" component={GetMapArea} />
         <Stack.Screen name="Basemap" component={Basemap} />
+        <Stack.Screen name="ZoomMap" component={ZoomMap} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -28,6 +30,7 @@ const HomeScreen = ({ navigation }) => {
       <Button title="Map (online)" onPress={() => navigation.navigate('Map (online)', {})} />
       <Button title="Get Map Area" onPress={() => navigation.navigate('GetMapArea', {})} />
       <Button title="Change Basemap" onPress={() => navigation.navigate('Basemap', {})} />
+      <Button title="Set Zoom" onPress={() => navigation.navigate('ZoomMap', {})} />
     </>
   );
 };
