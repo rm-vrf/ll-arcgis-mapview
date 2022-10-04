@@ -110,6 +110,7 @@ const MapOnline = () => {
             </Button>
             <ArcGISMapView
                 style={styles.map} 
+                spatialReference = {{ wkid: 4326 }}
                 initialMapCenter={[center]}
                 recenterIfGraphicTapped={true}
                 //basemapUrl={'https://www.arcgis.com/home/item.html?id=' + basemap}

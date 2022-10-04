@@ -16,6 +16,7 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
     var geodatabases: [NSString: RNAGSGeodatabase] = [:]
     var router: RNAGSRouter?
     var bridge: RCTBridge?
+    var spaRef: AGSSpatialReference = AGSSpatialReference.wgs84()
     
     // MARK: Initializers and helper methods
     required init?(coder aDecoder: NSCoder) {
@@ -62,7 +63,7 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
     }
 
     func raiseEvent(event: @escaping RCTDirectEventBlock, screenPoint: CGPoint, mapPoint: AGSPoint) {
-        let latLongPoint = AGSGeometryEngine.projectGeometry(mapPoint, to: AGSSpatialReference.wgs84()) as! AGSPoint
+        let latLongPoint = AGSGeometryEngine.projectGeometry(mapPoint, to: spaRef) as! AGSPoint
         var reactResult: [AnyHashable: Any] = [
             "mapPoint": ["latitude" : latLongPoint.y, "longitude": latLongPoint.x],
             "screenPoint" : ["x": screenPoint.x, "y": screenPoint.y]
@@ -126,7 +127,7 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
 
     func raiseOnMapMoved() {
         if let onMapMoved = onMapMoved {
-            let env = AGSGeometryEngine.projectGeometry(self.visibleArea!.extent, to: AGSSpatialReference.wgs84()) as! AGSEnvelope
+            let env = AGSGeometryEngine.projectGeometry(self.visibleArea!.extent, to: spaRef) as! AGSEnvelope
             //print("viewpointChangedHandler \(env.xMin), \(env.xMax), \(env.yMin), \(env.yMax), \(env.center.x), \(env.center.y), \(env.width), \(env.height)")
             let reactResult: [AnyHashable: Any] = [
                 "mapPoint" : ["latitude" : env.center.y, "longitude": env.center.x]
@@ -156,7 +157,7 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
                 print("WARNING: The point object did not contian a proper latitude and longitude.")
                 return
         }
-        let agsPoint = AGSPoint(x: longitude.doubleValue, y: latitude.doubleValue, spatialReference: AGSSpatialReference.wgs84())
+        let agsPoint = AGSPoint(x: longitude.doubleValue, y: latitude.doubleValue, spatialReference: spaRef)
         self.callout.title = String(title)
         self.callout.detail = String(text)
         self.callout.isAccessoryButtonHidden = true
@@ -174,7 +175,7 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
         if let argsCasted = args as? [NSDictionary] {
             for rawPoint in argsCasted {
                 if let latitude = rawPoint["latitude"] as? NSNumber, let longitude = rawPoint["longitude"] as? NSNumber {
-                    points.append(AGSPoint(x: longitude.doubleValue, y: latitude.doubleValue, spatialReference: AGSSpatialReference.wgs84()))
+                    points.append(AGSPoint(x: longitude.doubleValue, y: latitude.doubleValue, spatialReference: spaRef))
                 }
             }
         }
@@ -199,7 +200,7 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
     }
     
     @objc func addGraphicsOverlay(_ args: NSDictionary) {
-        let rnRawGraphicsOverlay = RNAGSGraphicsOverlay(rawData: args)
+        let rnRawGraphicsOverlay = RNAGSGraphicsOverlay(rawData: args, spaRef: spaRef)
         self.graphicsOverlays.add(rnRawGraphicsOverlay)
         if (onOverlayWasAdded != nil) {
             onOverlayWasAdded!([NSString(string: "referenceId"): rnRawGraphicsOverlay.referenceId]);
@@ -416,7 +417,7 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
     }
     
     @objc func getVisibleArea(_ resolve: RCTPromiseResolveBlock, rejecter reject: RCTPromiseRejectBlock) {
-        let env = AGSGeometryEngine.projectGeometry(self.visibleArea!.extent, to: AGSSpatialReference.wgs84()) as! AGSEnvelope
+        let env = AGSGeometryEngine.projectGeometry(self.visibleArea!.extent, to: spaRef) as! AGSEnvelope
         let reactResult: [AnyHashable: Any] = [
             "min": ["latitude" : env.yMin, "longitude": env.xMin],
             "max": ["latitude" : env.yMax, "longitude": env.xMax],
@@ -497,7 +498,7 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
     @objc var routeUrl: NSString? {
         didSet {
             if let routeUrl = URL(string: String(routeUrl ?? "")) {
-                router = RNAGSRouter(routeUrl: routeUrl)
+                router = RNAGSRouter(routeUrl: routeUrl, spaRef: spaRef)
             }
         }
     }
@@ -507,24 +508,19 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
         didSet{
             self.mapCenter = initialMapCenter
             var points = [AGSPoint]()
-            var scale: Double = 10000
             if let initialMapCenter = initialMapCenter as? [NSDictionary] {
                 for rawPoint in initialMapCenter {
                     if let latitude = rawPoint["latitude"] as? NSNumber, let longitude = rawPoint["longitude"] as? NSNumber {
-                        points.append(AGSPoint(x: longitude.doubleValue, y: latitude.doubleValue, spatialReference: AGSSpatialReference.wgs84()))
+                        points.append(AGSPoint(x: longitude.doubleValue, y: latitude.doubleValue, spatialReference: spaRef))
                     } // end if let
-                    if let d = rawPoint["scale"] as? Double {
-                        scale = d
-                    }
                 }// end for loop
             } // end initialmapcenter nil check
             // If no points exist, add a sample point
             //if points.count == 0 {
-            //    points.append(AGSPoint(x: 36.244797, y: -94.148060, spatialReference: AGSSpatialReference.wgs84()))
+            //    points.append(AGSPoint(x: 36.244797, y: -94.148060, spatialReference: spaRef))
             //}
             if points.count == 1 {
-                let viewpoint = AGSViewpoint(center: points.first!, scale: scale)
-                self.map?.initialViewpoint = viewpoint
+                self.setViewpointCenter(points.first!)
             } else {
                 let polygon = AGSPolygon(points: points)
                 self.setViewpointGeometry(polygon, padding: 50, completion: nil)
@@ -550,6 +546,21 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
             self.interactionOptions.isRotateEnabled = rotationEnabled
         }
     };
+    
+    @objc var spatialRef: NSDictionary = [:] {
+        didSet {
+            if let wkid = spatialRef["wkid"] as? NSNumber {
+                if let verticalWKID = spatialRef["verticalWKID"] as? NSNumber {
+                    self.spaRef = AGSSpatialReference(wkid: wkid.intValue, verticalWKID: verticalWKID.intValue)!
+                } else {
+                    self.spaRef = AGSSpatialReference(wkid: wkid.intValue)!
+                }
+            } else if let wkText = spatialRef["wkText"] as? String {
+                self.spaRef = AGSSpatialReference(wkText: wkText)!
+            }
+            print("\(self.spaRef.wkid) \(self.spaRef.wkText)")
+        }
+    }
 
     // MARK: Misc.
     private func getOverlay(byReferenceId referenceId: NSString?) -> RNAGSGraphicsOverlay? {

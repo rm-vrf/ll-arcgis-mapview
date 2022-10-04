@@ -28,6 +28,7 @@ RCT_EXPORT_VIEW_PROPERTY(onMapMoved, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onGeodatabaseWasAdded, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onGeodatabaseWasModified, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onGeodatabaseWasRemoved, RCTDirectEventBlock)
+RCT_REMAP_VIEW_PROPERTY(spatialReference, spatialRef, NSDictionary)
 
 
 // MARK: External method exports (these can be called from react via a reference)

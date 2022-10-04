@@ -17,9 +17,10 @@ public class RNAGSGraphicsOverlay: AGSGraphicsOverlay {
     var pointImageDictionary: [NSString: UIImage]
     let referenceId: NSString
     var shouldAnimateUpdate: Bool = false
+    var spaRef: AGSSpatialReference
     
     // MARK: Initializer
-    init(rawData: NSDictionary){
+    init(rawData: NSDictionary, spaRef: AGSSpatialReference){
         guard let referenceIdRaw = rawData["referenceId"] as? NSString else {
             fatalError("The RNAGSGraphicsLayer needs a reference ID.")
         }
@@ -35,6 +36,7 @@ public class RNAGSGraphicsOverlay: AGSGraphicsOverlay {
                 }
             }
         }
+        self.spaRef = spaRef
         super.init()
         for item in rawDataCasted {
             if let point = RNAGSGraphicsOverlay.createPoint(rawData: item) {
