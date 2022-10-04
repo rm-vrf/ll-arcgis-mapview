@@ -16,8 +16,10 @@ public class RNAGSRouter {
     // MARK: Properties
     private var parameters: AGSRouteParameters?
     private let routeTask: AGSRouteTask
+    var spaRef: AGSSpatialReference
     
-    public init(routeUrl: URL) {
+    public init(routeUrl: URL, spaRef: AGSSpatialReference) {
+        self.spaRef = spaRef
         routeTask = AGSRouteTask(url: routeUrl)
         routeTask.defaultRouteParameters { [weak self](defaultParameters, error) in
             if let error = error {
