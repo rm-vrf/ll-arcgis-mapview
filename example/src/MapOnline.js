@@ -114,7 +114,13 @@ const MapOnline = () => {
                 initialMapCenter={[center]}
                 recenterIfGraphicTapped={true}
                 //basemapUrl={'https://www.arcgis.com/home/item.html?id=' + basemap}
-                onMapDidLoad={e => { console.log('onMapDidLoad', e.nativeEvent) }} 
+                onMapDidLoad = {e => {
+                    console.log('onMapDidLoad', e.nativeEvent); 
+                    setTimeout(function() {
+                        console.log('zoom map'); 
+                        agsView.zoomMap(9);
+                    }, 1000); 
+                }} 
                 onSingleTap={e => { console.log('onSingleTap', e.nativeEvent) }} 
                 onLongPress={e => { console.log('onLongPress', e.nativeEvent) }}
                 //onMapMoved={e => { console.log('onMapMoved', e.nativeEvent) }} 

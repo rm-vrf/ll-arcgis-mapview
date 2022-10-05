@@ -17,6 +17,7 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
     var router: RNAGSRouter?
     var bridge: RCTBridge?
     var spaRef: AGSSpatialReference = AGSSpatialReference.wgs84()
+    var baseLayers: [String: AGSLayer] = [:]
     
     // MARK: Initializers and helper methods
     required init?(coder aDecoder: NSCoder) {
@@ -196,7 +197,7 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
 
     @objc func zoomMap(_ args: NSNumber) {
         let scale = 591657550.5 / pow(2, args.doubleValue)
-        self.setViewpointScale(scale)
+        scaleMap(NSNumber(value: scale))
     }
     
     @objc func addGraphicsOverlay(_ args: NSDictionary) {
@@ -383,6 +384,28 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
         geodatabases.removeValue(forKey: name)
     }
     
+    @objc func addBaseLayer(_ args: NSDictionary) {
+        guard let baseLayerReferenceId = args["referenceId"] as? String,  let basemapUrlString = args["url"] as? String else {
+            print("WARNING: Invalid base layer entered. No layers will be added.")
+            reportToOverlayDidLoadListener(referenceId: args["referenceId"] as? NSString ?? NSString(string:"unknown"), action: "add", success: false, errorMessage: "Invalid base layer entered.")
+            return
+        }
+        
+        if let url = URL(string: basemapUrlString), let layer = createLayer(url: url) {
+            self.baseLayers[baseLayerReferenceId] = layer
+            self.map?.basemap.baseLayers.add(layer)
+            reportToOverlayDidLoadListener(referenceId: NSString(string: baseLayerReferenceId), action: "add", success: true, errorMessage: nil)
+        }
+    }
+    
+    @objc func removeBaseLayer(_ arg: NSString) {
+        if let baseLayerReferenceId = arg as String?, let layer = self.baseLayers[baseLayerReferenceId] {
+            self.baseLayers.removeValue(forKey: baseLayerReferenceId)
+            self.map?.basemap.baseLayers.remove(layer)
+            reportToOverlayDidLoadListener(referenceId: NSString(string: baseLayerReferenceId), action: "remove", success: true, errorMessage: nil)
+        }
+    }
+    
     @objc func routeGraphicsOverlay(_ args: NSDictionary) {
         guard let router = router else {
             print ("RNAGSMapView - WARNING: No router was initialized. Perhaps no routeUrl was provided?")
@@ -448,11 +471,7 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
                     if let error = error {
                         print(error.localizedDescription)
                     } else {
-                        //self?.map?.basemap = basemap
-                        self?.map = AGSMap(basemap: basemap)
-                        if let center = self?.mapCenter {
-                            self?.centerMap(center)
-                        }
+                        self?.map?.basemap = basemap
                     }
                 }
             } else {
@@ -460,37 +479,39 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
             }
         }
     }
-  
+    
     private func createBasemap(url: URL) -> AGSBasemap? {
+        if let layer = createLayer(url: url) {
+            return AGSBasemap(baseLayer: layer)
+        } else {
+            return AGSBasemap(url: url)
+        }
+    }
+    
+    private func createLayer(url: URL) -> AGSLayer? {
+        var layer: AGSLayer? = nil
         if url.isFileURL && url.pathExtension.lowercased() == "vtpk" {
-            let vectorTiledLayer = AGSArcGISVectorTiledLayer(url: url)
-            return AGSBasemap(baseLayer: vectorTiledLayer)
+            layer = AGSArcGISVectorTiledLayer(url: url)
         } else if url.isFileURL && url.pathExtension.lowercased() == "tpkx" {
             let cache = AGSTileCache(fileURL: url)
-            let layer = AGSArcGISTiledLayer(tileCache: cache)
-            return AGSBasemap(baseLayer: layer)
+            layer = AGSArcGISTiledLayer(tileCache: cache)
         } else if !url.isFileURL && url.lastPathComponent == "VectorTileServer" {
-            let vectorTiledLayer = AGSArcGISVectorTiledLayer(url: url)
-            return AGSBasemap(baseLayer: vectorTiledLayer)
+            layer = AGSArcGISVectorTiledLayer(url: url)
         } else if !url.isFileURL && url.lastPathComponent == "MapServer" {// MapImageLayer or TiledLayer
             let urlAndParams:URL = URL(string: "\(url)?f=pjson")!
             let jsonData = URLSession(configuration: .default).synchronousGet(with: urlAndParams, params: nil);
             do {
                 let json = try JSONSerialization.jsonObject(with: jsonData.0!, options: []) as? [String: Any]
                 if let json = json, let _ = json["tileInfo"] {
-                    let tiledLayer = AGSArcGISTiledLayer(url: url)
-                    return AGSBasemap(baseLayer: tiledLayer)
+                    layer = AGSArcGISTiledLayer(url: url)
                 } else {
-                    let layer = AGSArcGISMapImageLayer(url: url)
-                    return AGSBasemap(baseLayer: layer)
+                    layer = AGSArcGISMapImageLayer(url: url)
                 }
             } catch {
                 print(error.localizedDescription)
-                return nil
             }
-        } else {
-            return AGSBasemap(url: url)
         }
+        return layer
     }
     
     @objc var recenterIfGraphicTapped: Bool = false
@@ -503,29 +524,11 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
         }
     }
 
-    private var mapCenter: NSArray?
     @objc var initialMapCenter: NSArray? {
         didSet{
-            self.mapCenter = initialMapCenter
-            var points = [AGSPoint]()
-            if let initialMapCenter = initialMapCenter as? [NSDictionary] {
-                for rawPoint in initialMapCenter {
-                    if let latitude = rawPoint["latitude"] as? NSNumber, let longitude = rawPoint["longitude"] as? NSNumber {
-                        points.append(AGSPoint(x: longitude.doubleValue, y: latitude.doubleValue, spatialReference: spaRef))
-                    } // end if let
-                }// end for loop
-            } // end initialmapcenter nil check
-            // If no points exist, add a sample point
-            //if points.count == 0 {
-            //    points.append(AGSPoint(x: 36.244797, y: -94.148060, spatialReference: spaRef))
-            //}
-            if points.count == 1 {
-                self.setViewpointCenter(points.first!)
-            } else {
-                let polygon = AGSPolygon(points: points)
-                self.setViewpointGeometry(polygon, padding: 50, completion: nil)
+            if let initialMapCenter = initialMapCenter {
+                centerMap(initialMapCenter)
             }
-            
         }// end didSet
     }// end initialMapCenter declaration
     

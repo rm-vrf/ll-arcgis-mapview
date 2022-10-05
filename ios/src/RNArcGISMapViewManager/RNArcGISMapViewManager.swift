@@ -126,6 +126,20 @@ public class RNArcGISMapViewManager: RCTViewManager {
         }
     }
     
+    @objc func addBaseLayerViaManager(_ args: NSDictionary) {
+        DispatchQueue.main.async {
+            let component = self.agsMapView!
+            component.addBaseLayer(args)
+        }
+    }
+    
+    @objc func removeBaseLayerViaManager(_ arg: NSString) {
+        DispatchQueue.main.async {
+            let component = self.agsMapView!
+            component.removeBaseLayer(arg)
+        }
+    }
+    
     @objc func routeGraphicsOverlayViaManager(_ node: NSNumber, args: NSDictionary) {
         DispatchQueue.main.async {
             let component = self.bridge.uiManager.view(forReactTag: node) as! RNArcGISMapView
