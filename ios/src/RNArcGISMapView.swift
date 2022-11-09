@@ -18,20 +18,27 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
     var bridge: RCTBridge?
     var spaRef: AGSSpatialReference = AGSSpatialReference.wgs84()
     var baseLayers: [String: AGSLayer] = [:]
+    var mapExporter: RNAGSMapExporter?
+    static var apiKey: String?
     
     // MARK: Initializers and helper methods
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setUpMap()
+        mapExporter = RNAGSMapExporter(mapView: self, progressEvent: onMapExportProgress)
     }
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUpMap()
+        mapExporter = RNAGSMapExporter(mapView: self, progressEvent: onMapExportProgress)
     }
     
     func setUpMap() {
         // Default is to Esri HQ
-        self.map = AGSMap(basemap: .streets())
+        if let apiKey = RNArcGISMapView.apiKey {
+            AGSArcGISRuntimeEnvironment.apiKey = apiKey
+        }
+        self.map = AGSMap(basemapStyle: .arcGISStreets)
         self.map?.load(completion: {[weak self] (error) in
             if (self?.onMapDidLoad != nil){
                 var reactResult: [AnyHashable: Any] = ["success" : error == nil]
@@ -148,6 +155,7 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
     @objc var onGeodatabaseWasAdded: RCTDirectEventBlock?
     @objc var onGeodatabaseWasModified: RCTDirectEventBlock?
     @objc var onGeodatabaseWasRemoved: RCTDirectEventBlock?
+    @objc var onMapExportProgress: RCTDirectEventBlock?
     
     // MARK: Exposed RN methods
     @objc func showCallout(_ args: NSDictionary) {
@@ -449,6 +457,14 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
         ]
         resolve(reactResult)
     }
+    
+    @objc func exportVectorTiles(_ args: NSDictionary, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+        if let mapExporter = mapExporter {
+            //mapExporter.spaRef = spaRef
+            mapExporter.progressEvent = onMapExportProgress
+            mapExporter.exportVectorTiles(args, resolve: resolve, reject: reject)
+        }
+    }
 
     @objc func getRouteIsVisible(_ args: RCTResponseSenderBlock) {
         args([routeGraphicsOverlay.isVisible])
@@ -462,6 +478,9 @@ public class RNArcGISMapView: AGSMapView, AGSGeoViewTouchDelegate {
     @objc var basemapUrl: NSString? {
         didSet{
             // TODO: allow for basemap name to be passed depending on enum
+            if let apiKey = RNArcGISMapView.apiKey {
+                AGSArcGISRuntimeEnvironment.apiKey = apiKey
+            }
             let basemapUrlString = String(basemapUrl ?? "")
             if (self.map == nil) {
                 setUpMap()
