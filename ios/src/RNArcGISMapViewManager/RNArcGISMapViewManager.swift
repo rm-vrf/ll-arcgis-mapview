@@ -168,6 +168,13 @@ public class RNArcGISMapViewManager: RCTViewManager {
         }
     }
     
+    @objc func exportVectorTilesViaManager(_ args: NSDictionary, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+        DispatchQueue.main.async {
+            let component = self.agsMapView!
+            component.exportVectorTiles(args, resolver: resolve, rejecter: reject)
+        }
+    }
+    
     @objc func dispose(/*_ node: NSNumber*/) {
         self.agsMapView?.graphicsOverlays.removeAllObjects()
         self.agsMapView?.map = nil
@@ -175,6 +182,7 @@ public class RNArcGISMapViewManager: RCTViewManager {
     }
     
     @objc func setLicenseKey(_ key: String) {
+        RNArcGISMapView.apiKey = key
         do {
             try AGSArcGISRuntimeEnvironment.setLicenseKey(key)
         }

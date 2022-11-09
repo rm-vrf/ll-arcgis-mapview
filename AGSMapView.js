@@ -79,6 +79,14 @@ class ArcGISMapView extends React.Component {
         });
     }
 
+    exportVectorTiles = (args) => {
+        return new Promise((resolve, reject) => {
+            NativeModules.RNArcGISMapViewManager.exportVectorTilesViaManager(args)
+            .then(result => resolve(result))
+            .catch(error => reject(error));
+        });
+    }
+
     // MARK: Render
     render() {
         return <AGSMap {...this.props} ref={this.agsMapRef} />

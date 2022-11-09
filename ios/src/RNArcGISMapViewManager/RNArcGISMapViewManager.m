@@ -29,6 +29,7 @@ RCT_EXPORT_VIEW_PROPERTY(onGeodatabaseWasAdded, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onGeodatabaseWasModified, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onGeodatabaseWasRemoved, RCTDirectEventBlock)
 RCT_REMAP_VIEW_PROPERTY(spatialReference, spatialRef, NSDictionary)
+RCT_EXPORT_VIEW_PROPERTY(onMapExportProgress, RCTDirectEventBlock)
 
 
 // MARK: External method exports (these can be called from react via a reference)
@@ -53,6 +54,7 @@ RCT_EXTERN_METHOD(removeGeodatabaseViaManager:(NSString*) args)
 RCT_EXTERN_METHOD(getVisibleAreaViaManager:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(addBaseLayerViaManager:(NSDictionary*)args)
 RCT_EXTERN_METHOD(removeBaseLayerViaManager:(NSString*) arg)
+RCT_EXTERN_METHOD(exportVectorTilesViaManager:(NSDictionary*)arg resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(dispose/*:(nonnull NSNumber*) node*/)
 @end

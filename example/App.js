@@ -7,6 +7,7 @@ import GetMapArea from "./src/GetMapArea";
 import Basemap from "./src/Basemap";
 import ZoomMap from "./src/ZoomMap";
 import BaseLayer from "./src/BaseLayer";
+import ExportVectorTiles from "./src/ExportVectorTiles";
 
 const Stack = createNativeStackNavigator();
 const navigationRef = React.createRef();
@@ -21,6 +22,7 @@ const App = () => {
         <Stack.Screen name="Basemap" component={Basemap} />
         <Stack.Screen name="ZoomMap" component={ZoomMap} />
         <Stack.Screen name="BaseLayer" component={BaseLayer} />
+        <Stack.Screen name="ExportVectorTiles" component={ExportVectorTiles} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -34,6 +36,7 @@ const HomeScreen = ({ navigation }) => {
       <Button title="Change Basemap" onPress={() => navigation.navigate('Basemap', {})} />
       <Button title="Set Zoom" onPress={() => navigation.navigate('ZoomMap', {})} />
       <Button title="Base Layer" onPress={() => navigation.navigate('BaseLayer', {})} />
+      <Button title="Export Vector Tiles" onPress={() => navigation.navigate('ExportVectorTiles', {})} />
     </>
   );
 };
